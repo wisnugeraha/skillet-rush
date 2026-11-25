@@ -1,6 +1,6 @@
 // Skillet Rush — all drawing lives here: kitchen bones, crates, food, pans,
 // tickets. Nothing in this module mutates game state; it reads and paints.
-import { CANVAS_W, CANVAS_H, RAIL_Y, COUNTER_Y, BOARD, STOVE, PASS, CRATE_ORDER, INGREDIENTS } from "./config.js";
+import { CANVAS_W, CANVAS_H, RAIL_Y, COUNTER_Y, BOARD, STOVE, PASS, CRATE_ORDER, INGREDIENTS, PAN_SLOTS } from "./config.js";
 
 function roundRect(ctx, x, y, w, h, r) {
   ctx.beginPath();
@@ -71,12 +71,23 @@ export function paintBoardHousing(ctx) {
   label(ctx, "PREP BLOCK", BOARD.x + BOARD.w / 2, BOARD.y + 30);
 }
 
-export function paintStoveHousing(ctx) {
+export function paintStoveHousing(ctx, pans) {
   roundRect(ctx, STOVE.x, STOVE.y, STOVE.w, STOVE.h, 16);
   ctx.fillStyle = "#26313a";
   ctx.fill();
   ctx.strokeStyle = "#415463"; ctx.lineWidth = 3; ctx.stroke();
   label(ctx, "FLAT-TOP LINE", STOVE.x + STOVE.w / 2, STOVE.y + 30);
+  PAN_SLOTS.forEach((slot, i) => {
+    const busy = pans && pans[i] && pans[i].busy;
+    if (busy) {
+      const heat = ctx.createRadialGradient(slot.cx, slot.cy + 10, 8, slot.cx, slot.cy + 10, 90);
+      heat.addColorStop(0, "rgba(255,120,40,0.4)");
+      heat.addColorStop(1, "rgba(255,120,40,0)");
+      ctx.fillStyle = heat;
+      ctx.fillRect(slot.cx - 95, slot.cy - 85, 190, 190);
+    }
+    paintPan(ctx, slot.cx, slot.cy, 52);
+  });
 }
 
 export function paintPassHousing(ctx) {
@@ -320,21 +331,21 @@ export function paintTicket(ctx, x, y, w, h, dish, timeFrac, urgent) {
   // pin
   ctx.fillStyle = urgent ? "#ff5d4e" : "#c9a24d";
   ctx.beginPath(); ctx.arc(x + w / 2, y + 2, 6, 0, Math.PI * 2); ctx.fill();
-  ctx.font = "700 17px Georgia, serif";
+  ctx.font = "700 16px Georgia, serif";
   ctx.textAlign = "center";
   ctx.fillStyle = "#3a2c1c";
-  ctx.fillText(dish.name, x + w / 2, y + 34);
-  let iy = y + 58;
+  ctx.fillText(dish.name, x + w / 2, y + 30);
+  let iy = y + 50;
   ctx.font = "500 13px system-ui, sans-serif";
   ctx.textAlign = "left";
   for (const comp of dish.components) {
-    drawFoodIcon(ctx, comp, "raw", x + 24, iy - 4, 9);
+    drawFoodIcon(ctx, comp, "raw", x + 24, iy - 4, 8);
     ctx.fillStyle = "#4c3a26";
     ctx.fillText(INGREDIENTS[comp].label, x + 40, iy);
-    iy += 22;
+    iy += 18;
   }
   // timer bar along the ticket foot
-  const bx = x + 10, by = y + h - 14, bw = w - 20;
+  const bx = x + 10, by = y + h - 12, bw = w - 20;
   ctx.fillStyle = "rgba(60,40,20,0.2)";
   roundRect(ctx, bx, by, bw, 8, 4); ctx.fill();
   const frac = Math.max(0, Math.min(1, timeFrac));

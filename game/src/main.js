@@ -218,7 +218,7 @@ function paintTickets(ctx) {
   const startX = (CANVAS_W - (n * w + (n - 1) * gap)) / 2;
   world.book.tickets.forEach((t, i) => {
     const frac = t.timeLeft / t.totalTime;
-    art.paintTicket(ctx, startX + i * (w + gap), 14, w, 122, t.dish, frac, frac < 0.3);
+    art.paintTicket(ctx, startX + i * (w + gap), 10, w, 130, t.dish, frac, frac < 0.3);
   });
 }
 
@@ -260,7 +260,7 @@ function paintGameOver(ctx) {
 function render(dt) {
   art.paintKitchen(ctx);
   art.paintBoardHousing(ctx);
-  art.paintStoveHousing(ctx);
+  art.paintStoveHousing(ctx, world.pans);
   art.paintPassHousing(ctx);
   for (const rect of art.crateRects()) {
     const hot = world.carried && world.carried.state === "raw" && rect.kind === world.carried.kind;
