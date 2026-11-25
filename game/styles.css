@@ -1,0 +1,22 @@
+/* Skillet Rush — page chrome: the canvas owns everything inside the game. */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: #14100d;
+  overflow: hidden;
+}
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#game {
+  width: min(100vw, 1280px);
+  height: auto;
+  aspect-ratio: 1280 / 800;
+  image-rendering: auto;
+  border-radius: 10px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.65);
+  cursor: crosshair;
+}
